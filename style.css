@@ -1,0 +1,64 @@
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+:root {
+  --bgc: rgb(90, 131, 90);
+}
+body {
+  background-color: var(--bgc);
+  opacity: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.gameboard {
+  width: 95vh;
+  background-color: rgb(19, 38, 146);
+  padding: 20px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  aspect-ratio: 7/6;
+
+  gap: 10px;
+}
+
+.field {
+  background-color: var(--bgc);
+  cursor: pointer;
+  font-size: 3rem;
+  color: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  border-radius: 50%;
+  position: relative;
+}
+
+.red {
+  background-color: red;
+}
+.yellow {
+  background-color: yellow;
+}
+
+@media (max-width: 900px) {
+  .wrap {
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content 1fr;
+    column-gap: unset;
+    row-gap: 20px;
+  }
+  .gameboard {
+    width: 80vw;
+  }
+}
