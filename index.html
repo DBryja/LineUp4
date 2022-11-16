@@ -10,7 +10,21 @@
   </head>
   <body>
     <div class="wrap">
+      <div class="menu">
+        <button class="new-game clear-input">New Game</button>
+        <div class="board-sizing">
+          <h2 class="">Change boards size</h2>
+          <button class="size-traditional clear-input">7x6</button>
+          <form>
+            <h3>Custom size:</h3>
+            <input type="number" name="cols" id="cols" placeholder="columns" /><br />
+            <input type="number" name="rows" id="rows" placeholder="rows" /><br />
+            <button class="change">CHANGE</button>
+          </form>
+        </div>
+      </div>
       <section class="gameboard"></section>
     </div>
+    <div class="cursor"></div>
   </body>
 </html>

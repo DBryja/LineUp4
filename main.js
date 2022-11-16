@@ -1,12 +1,43 @@
 document.addEventListener("DOMContentLoaded", function () {
   let player = true; //true = red , false = yellow
   const gameboard = document.querySelector(".gameboard");
+  const cursor = document.querySelector(".cursor");
   let cols = 7;
   let rows = 6;
 
+  document.querySelector(".new-game").addEventListener("click", () => {
+    drawBoard(cols, rows);
+    fieldOnclick();
+  });
+  document.querySelector(".size-traditional").addEventListener("click", function () {
+    cols = 7;
+    rows = 6;
+    document.querySelectorAll("input").forEach((input) => (input.value = ""));
+    drawBoard(cols, rows);
+    fieldOnclick();
+  });
+  document.querySelector(".change").addEventListener("click", function (e) {
+    e.preventDefault();
+    let colsToChange = document.querySelector("#cols").value;
+    let rowsToChange = document.querySelector("#rows").value;
+    if (colsToChange >= 4 && rowsToChange >= 4) {
+      cols = colsToChange;
+      rows = rowsToChange;
+      drawBoard(cols, rows);
+      fieldOnclick();
+    } else {
+      alert("Selected board is too small");
+    }
+  });
+  document.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      button.animate([{ transform: "scale(0.9)" }], 50);
+    });
+  });
+
   function drawBoard(cols, rows) {
     // clears gameboard
-    gameboard.innerHTML = "";
+    gameboard.innerHTML = "<span class='mask'>PLAY AGAIN</span>";
     // builds gameboard
     let id = 1;
     for (let i = 1; i <= rows; i++) {
@@ -29,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // colors the field and changes current player
   function fieldOnclick() {
     const fields = document.querySelectorAll(".field");
-    //  adds eventlistener for each field
+
     fields.forEach((field) => {
       field.addEventListener("click", (e) => {
         // downloads id of clicked column
@@ -51,9 +82,11 @@ document.addEventListener("DOMContentLoaded", function () {
           if (player) {
             disc.classList.add("red");
             disc.setAttribute("data-color", "red");
+            cursor.style.backgroundColor = "yellow";
           } else {
             disc.classList.add("yellow");
             disc.setAttribute("data-color", "ylw");
+            cursor.style.backgroundColor = "red";
           }
         } else {
           return;
@@ -65,12 +98,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function onWinEvent() {
+    if (player) {
+      document.querySelector(".mask").textContent = "Red Wins";
+    } else {
+      document.querySelector(".mask").textContent = "Yellow Wins";
+    }
+    document.querySelector(".mask").style.display = "flex";
+    document.querySelector(".mask").animate([{ opacity: 1 }], { duration: 300, fill: "forwards" });
+  }
+
   function checkWin() {
     for (i = 1; i <= rows * cols; i++) {
       // check horizontal
       if (
         document.querySelector(`[data-id="${i}"]`).dataset.col <= cols - 3 &&
-        document.querySelector(`[data-id="${i + 3}"]`).dataset.color != undefined
+        document.querySelector(`[data-id="${i + 1}"]`).dataset.color != undefined
       ) {
         if (
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
@@ -80,13 +123,13 @@ document.addEventListener("DOMContentLoaded", function () {
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
             document.querySelector(`[data-id="${i + 3}"]`).dataset.color
         ) {
-          alert("win horizontal");
+          onWinEvent();
         }
       }
       // check vertical
       if (
-        document.querySelector(`[data-id="${i}"]`).dataset.row > rows - 3 &&
-        document.querySelector(`[data-id="${i - 3 * cols}"]`).dataset.color != undefined
+        document.querySelector(`[data-id="${i}"]`).dataset.row >= 4 &&
+        document.querySelector(`[data-id="${i - 1 * cols}"]`).dataset.color != undefined
       ) {
         if (
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
@@ -96,14 +139,14 @@ document.addEventListener("DOMContentLoaded", function () {
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
             document.querySelector(`[data-id="${i - 3 * cols}"]`).dataset.color
         ) {
-          alert("win vertical");
+          onWinEvent();
         }
       }
       // check diagonal ↘ (from right to left and from bottom to top)
       if (
         document.querySelector(`[data-id="${i}"]`).dataset.col >= cols - 3 &&
-        document.querySelector(`[data-id="${i}"]`).dataset.row > rows - 3 &&
-        document.querySelector(`[data-id="${i - 3 * cols - 3}"]`).dataset.color != undefined
+        document.querySelector(`[data-id="${i}"]`).dataset.row >= 4 &&
+        document.querySelector(`[data-id="${i - 1 * cols - 1}"]`).dataset.color != undefined
       ) {
         if (
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
@@ -113,14 +156,14 @@ document.addEventListener("DOMContentLoaded", function () {
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
             document.querySelector(`[data-id="${i - 3 * cols - 3}"]`).dataset.color
         ) {
-          alert("win diagonal ↘");
+          onWinEvent();
         }
       }
       // check diagonal ↙ (from right to left and from bottom to top)
       if (
         document.querySelector(`[data-id="${i}"]`).dataset.col <= cols - 3 &&
-        document.querySelector(`[data-id="${i}"]`).dataset.row > rows - 3 &&
-        document.querySelector(`[data-id="${i - 3 * cols + 3}"]`).dataset.color != undefined
+        document.querySelector(`[data-id="${i}"]`).dataset.row >= 4 &&
+        document.querySelector(`[data-id="${i - 1 * cols + 1}"]`).dataset.color != undefined
       ) {
         if (
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
@@ -130,12 +173,23 @@ document.addEventListener("DOMContentLoaded", function () {
           document.querySelector(`[data-id="${i}"]`).dataset.color ==
             document.querySelector(`[data-id="${i - 3 * cols + 3}"]`).dataset.color
         ) {
-          alert("win diagonal ↙");
+          onWinEvent();
         }
       }
     }
   }
 
+  //mouse click effect
+  document.body.addEventListener("click", function () {
+    cursor.animate([{ transform: "scale(0.9)" }], 50);
+  });
+  const followCursor = (e) => {
+    cursor.style.left = e.pageX - cursor.offsetWidth / 2 + "px";
+    cursor.style.top = e.pageY - cursor.offsetWidth / 2 + "px";
+  };
+  document.addEventListener("mousemove", followCursor);
+
   drawBoard(cols, rows);
   fieldOnclick();
+  followCursor();
 });
